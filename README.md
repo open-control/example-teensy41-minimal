@@ -160,18 +160,17 @@ The `REQUIRES` structure ensures that all needed APIs (buttons, encoders, MIDI) 
 
 ### 3. Application Setup (`main.cpp`)
 
-Uses `AppBuilder` for clean dependency injection:
+Uses `oc::teensy::AppBuilder` for clean, minimal configuration:
 
 ```cpp
-app.emplace(oc::app::AppBuilder()
-    .timeProvider(millis)
-    .midi(std::make_unique<oc::teensy::UsbMidi>())
-    .encoders(std::make_unique<oc::teensy::EncoderController<4>>(
-        Config::ENCODERS, oc::teensy::encoderFactory()))
-    .buttons(std::make_unique<oc::teensy::ButtonController<2>>(
-        Config::BUTTONS, oc::teensy::gpio(), nullptr, Config::DEBOUNCE_MS))
-    .inputConfig(inputConfig)
-    .build());
+app = oc::teensy::AppBuilder()
+    .midi()
+    .encoders(Config::ENCODERS)
+    .buttons(Config::BUTTONS, Config::DEBOUNCE_MS)
+    .inputConfig({
+        .longPressMs = Config::LONG_PRESS_MS,
+        .doubleTapWindowMs = Config::DOUBLE_TAP_MS
+    });
 
 app->registerContext<MinimalContext>(ContextID::MINIMAL, "Minimal");
 app->begin();

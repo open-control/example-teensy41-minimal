@@ -4,8 +4,8 @@
  *
  * Demonstrates:
  * - Hardware configuration with constexpr definitions
- * - AppBuilder for clean dependency injection
- * - New fluent API for input binding (onButton, onEncoder)
+ * - Simplified oc::teensy::AppBuilder API
+ * - Fluent input binding API (onButton, onEncoder)
  * - MIDI CC output via MidiAPI
  *
  * Features shown:
@@ -23,18 +23,10 @@
 // Framework includes
 // ═══════════════════════════════════════════════════════════════════
 
-#include <oc/app/AppBuilder.hpp>
 #include <oc/app/OpenControlApp.hpp>
 #include <oc/context/IContext.hpp>
 #include <oc/context/Requirements.hpp>
-#include <oc/core/input/InputConfig.hpp>
-
-// Drivers
-#include <oc/teensy/ButtonController.hpp>
-#include <oc/teensy/EncoderController.hpp>
-#include <oc/teensy/EncoderToolHardware.hpp>
-#include <oc/teensy/TeensyGpio.hpp>
-#include <oc/teensy/UsbMidi.hpp>
+#include <oc/teensy/Teensy.hpp>
 
 // Local configuration
 #include "Config.hpp"
@@ -131,7 +123,6 @@ private:
 // Global Application Instance
 // ═══════════════════════════════════════════════════════════════════
 
-// Use std::optional because OpenControlApp requires AppBuilder for construction
 std::optional<oc::app::OpenControlApp> app;
 
 // ═══════════════════════════════════════════════════════════════════
@@ -149,40 +140,16 @@ void setup() {
     Serial.println("========================================\n");
 
     // ─────────────────────────────────────────────────────
-    // Configure input timing
+    // Build application
     // ─────────────────────────────────────────────────────
-    oc::core::InputConfig inputConfig{
-        .longPressMs = Config::LONG_PRESS_MS,
-        .doubleTapWindowMs = Config::DOUBLE_TAP_MS
-    };
-
-    // ─────────────────────────────────────────────────────
-    // Build application with AppBuilder
-    // ─────────────────────────────────────────────────────
-    app.emplace(oc::app::AppBuilder()
-        // Time provider (required) - platform-specific milliseconds function
-        .timeProvider(millis)
-
-        // MIDI transport
-        .midi(std::make_unique<oc::teensy::UsbMidi>())
-
-        // Encoders (4x using Teensy optimized driver with ISR)
-        .encoders(std::make_unique<oc::teensy::EncoderController<4>>(
-            Config::ENCODERS, oc::teensy::encoderFactory()))
-
-        // Buttons (2x using generic Arduino driver)
-        .buttons(std::make_unique<oc::teensy::ButtonController<2>>(
-            Config::BUTTONS,
-            oc::teensy::gpio(),
-            nullptr,
-            Config::DEBOUNCE_MS
-        ))
-
-        // Input timing configuration
-        .inputConfig(inputConfig)
-
-        // Build the application
-        .build());
+    app = oc::teensy::AppBuilder()
+        .midi()
+        .encoders(Config::ENCODERS)
+        .buttons(Config::BUTTONS, Config::DEBOUNCE_MS)
+        .inputConfig({
+            .longPressMs = Config::LONG_PRESS_MS,
+            .doubleTapWindowMs = Config::DOUBLE_TAP_MS
+        });
 
     // ─────────────────────────────────────────────────────
     // Register context and start
