@@ -26,6 +26,7 @@
 #include <oc/app/OpenControlApp.hpp>
 #include <oc/context/IContext.hpp>
 #include <oc/context/Requirements.hpp>
+#include <oc/core/Result.hpp>
 #include <oc/teensy/Teensy.hpp>
 
 // Local configuration
@@ -156,10 +157,11 @@ void setup() {
     // ─────────────────────────────────────────────────────
     app->registerContext<MinimalContext>(ContextID::MINIMAL, "Minimal");
 
-    if (!app->begin()) {
-        Serial.println("[ERROR] Failed to initialize application!");
+    auto result = app->begin();
+    if (!result) {
+        Serial.printf("[ERROR] Failed to initialize: %s\n",
+                      oc::core::errorCodeToString(result.error().code));
         while (true) {
-            // Halt on error
             delay(1000);
         }
     }

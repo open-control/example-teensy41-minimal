@@ -49,46 +49,11 @@ constexpr uint8_t DEBOUNCE_MS = 5;
  * - invertDirection: Flip rotation direction if wired backwards
  */
 constexpr std::array<oc::common::EncoderDef, 4> ENCODERS = {{
-    // Encoder 1: MACRO_1 (pins from midi-studio/core)
-    {
-        .id = 1,
-        .pinA = 22,
-        .pinB = 23,
-        .ppr = 24,
-        .rangeAngle = 270,
-        .ticksPerEvent = 4,
-        .invertDirection = false
-    },
-    // Encoder 2: MACRO_2
-    {
-        .id = 2,
-        .pinA = 18,
-        .pinB = 19,
-        .ppr = 24,
-        .rangeAngle = 270,
-        .ticksPerEvent = 4,
-        .invertDirection = false
-    },
-    // Encoder 3: MACRO_3
-    {
-        .id = 3,
-        .pinA = 40,
-        .pinB = 41,
-        .ppr = 24,
-        .rangeAngle = 270,
-        .ticksPerEvent = 4,
-        .invertDirection = false
-    },
-    // Encoder 4: MACRO_4
-    {
-        .id = 4,
-        .pinA = 36,
-        .pinB = 37,
-        .ppr = 24,
-        .rangeAngle = 270,
-        .ticksPerEvent = 4,
-        .invertDirection = false
-    }
+    // EncoderDef(id, pinA, pinB, ppr, rangeAngle, ticksPerEvent, invertDirection)
+    oc::common::EncoderDef(1, 22, 23, 24, 270, 4, false),  // MACRO_1
+    oc::common::EncoderDef(2, 18, 19, 24, 270, 4, false),  // MACRO_2
+    oc::common::EncoderDef(3, 40, 41, 24, 270, 4, false),  // MACRO_3
+    oc::common::EncoderDef(4, 36, 37, 24, 270, 4, false),  // MACRO_4
 }};
 
 // ═══════════════════════════════════════════════════════════════════
@@ -104,18 +69,9 @@ constexpr std::array<oc::common::EncoderDef, 4> ENCODERS = {{
  * - activeLow: true = pressed when LOW (pull-up), false = pressed when HIGH
  */
 constexpr std::array<oc::common::ButtonDef, 2> BUTTONS = {{
-    // Button 1: NAV (pin from midi-studio/core)
-    {
-        .id = 1,
-        .pin = {.pin = 32, .source = oc::hal::GpioPin::Source::MCU},
-        .activeLow = true
-    },
-    // Button 2: AUX (available Teensy 4.1 pin)
-    {
-        .id = 2,
-        .pin = {.pin = 35, .source = oc::hal::GpioPin::Source::MCU},
-        .activeLow = true
-    }
+    // ButtonDef(id, GpioPin{pin, source}, activeLow)
+    oc::common::ButtonDef(1, oc::hal::GpioPin{32, oc::hal::GpioPin::Source::MCU}, true),  // NAV
+    oc::common::ButtonDef(2, oc::hal::GpioPin{35, oc::hal::GpioPin::Source::MCU}, true),  // AUX
 }};
 
 // ═══════════════════════════════════════════════════════════════════
