@@ -13,21 +13,19 @@
  * - Button release → MIDI CC 0
  * - Button long press → Different action
  * - Encoder turn → MIDI CC (0-127 mapped from 0.0-1.0)
+ *
+ * NOTE: Enable -D OC_LOG in platformio.ini build_flags to see debug output.
+ *       Remove it for production (zero overhead, instant boot).
+ *
+ * Hardware configuration is in Config.hpp - ADAPT pins to your wiring.
  */
-
-#include <Arduino.h>
 
 #include <optional>
 
-// ═══════════════════════════════════════════════════════════════════
-// Framework includes
-// ═══════════════════════════════════════════════════════════════════
-
+#include <oc/teensy/Teensy.hpp>
 #include <oc/app/OpenControlApp.hpp>
 #include <oc/context/IContext.hpp>
 #include <oc/context/Requirements.hpp>
-#include <oc/core/Result.hpp>
-#include <oc/teensy/Teensy.hpp>
 
 // Local configuration
 #include "Config.hpp"
@@ -60,17 +58,11 @@ public:
     bool initialize() override {
         setupEncoderBindings();
         setupButtonBindings();
-        Serial.println("[MinimalContext] Initialized");
         return true;
     }
 
-    void update() override {
-        // Nothing to do each frame for this simple context
-    }
-
-    void cleanup() override {
-        Serial.println("[MinimalContext] Cleanup");
-    }
+    void update() override {}
+    void cleanup() override {}
 
     const char* getName() const override { return "Minimal Controller"; }
 
@@ -85,7 +77,7 @@ private:
             onEncoder(id).turn().then([this, cc](float value) {
                 uint8_t midiValue = static_cast<uint8_t>(value * 127.0f);
                 midi().sendCC(Config::MIDI_CHANNEL, cc, midiValue);
-                Serial.printf("[Encoder] CC %d = %d\n", cc, midiValue);
+                OC_LOG_DEBUG("Encoder: CC {} = {}", cc, midiValue);
             });
         }
     }
@@ -94,18 +86,17 @@ private:
         // Button 1: Press sends CC 127, release sends CC 0
         onButton(Config::BUTTONS[0].id).press().then([this]() {
             midi().sendCC(Config::MIDI_CHANNEL, Config::BUTTON1_CC, 127);
-            Serial.println("[Button 1] Pressed -> CC 127");
+            OC_LOG_DEBUG("Button 1: Press -> CC 127");
         });
 
         onButton(Config::BUTTONS[0].id).release().then([this]() {
             midi().sendCC(Config::MIDI_CHANNEL, Config::BUTTON1_CC, 0);
-            Serial.println("[Button 1] Released -> CC 0");
+            OC_LOG_DEBUG("Button 1: Release -> CC 0");
         });
 
         // Button 1: Long press for alternative action
         onButton(Config::BUTTONS[0].id).longPress(Config::LONG_PRESS_MS).then([]() {
-            Serial.println("[Button 1] Long press!");
-            // Example: could trigger a different CC or mode switch
+            OC_LOG_INFO("Button 1: Long press!");
         });
 
         // Button 2: Toggle behavior (press sends 127, press again sends 0)
@@ -113,7 +104,7 @@ private:
             button2_state_ = !button2_state_;
             uint8_t value = button2_state_ ? 127 : 0;
             midi().sendCC(Config::MIDI_CHANNEL, Config::BUTTON2_CC, value);
-            Serial.printf("[Button 2] Toggle -> CC %d\n", value);
+            OC_LOG_DEBUG("Button 2: Toggle -> CC {}", value);
         });
     }
 
@@ -131,18 +122,8 @@ std::optional<oc::app::OpenControlApp> app;
 // ═══════════════════════════════════════════════════════════════════
 
 void setup() {
-    // Initialize serial for debug output
-    Serial.begin(115200);
-    while (!Serial && millis() < 3000) {
-        // Wait for serial (with timeout for standalone operation)
-    }
-    Serial.println("\n========================================");
-    Serial.println("Open Control - Minimal Teensy 4.1 Example");
-    Serial.println("========================================\n");
+    OC_LOG_INFO("Minimal Example");
 
-    // ─────────────────────────────────────────────────────
-    // Build application
-    // ─────────────────────────────────────────────────────
     app = oc::teensy::AppBuilder()
         .midi()
         .encoders(Config::ENCODERS)
@@ -152,26 +133,10 @@ void setup() {
             .doubleTapWindowMs = Config::DOUBLE_TAP_MS
         });
 
-    // ─────────────────────────────────────────────────────
-    // Register context and start
-    // ─────────────────────────────────────────────────────
     app->registerContext<MinimalContext>(ContextID::MINIMAL, "Minimal");
+    app->begin();
 
-    auto result = app->begin();
-    if (!result) {
-        Serial.printf("[ERROR] Failed to initialize: %s\n",
-                      oc::core::errorCodeToString(result.error().code));
-        while (true) {
-            delay(1000);
-        }
-    }
-
-    Serial.println("[OK] Application started successfully");
-    Serial.println("\nControls:");
-    Serial.println("  Encoders 1-4: Send MIDI CC 16-19");
-    Serial.println("  Button 1: Press=CC20:127, Release=CC20:0, LongPress=debug");
-    Serial.println("  Button 2: Toggle CC21 (127/0)");
-    Serial.println("\n");
+    OC_LOG_INFO("Ready");
 }
 
 // ═══════════════════════════════════════════════════════════════════
