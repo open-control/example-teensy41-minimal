@@ -4,7 +4,7 @@
  *
  * Demonstrates:
  * - Hardware configuration with constexpr definitions
- * - Simplified oc::teensy::AppBuilder API
+ * - Simplified oc::hal::teensy::AppBuilder API
  * - Fluent input binding API (onButton, onEncoder)
  * - MIDI CC output via MidiAPI
  *
@@ -22,7 +22,7 @@
 
 #include <optional>
 
-#include <oc/teensy/Teensy.hpp>
+#include <oc/hal/teensy/Teensy.hpp>
 #include <oc/app/OpenControlApp.hpp>
 #include <oc/context/IContext.hpp>
 #include <oc/context/Requirements.hpp>
@@ -124,7 +124,7 @@ std::optional<oc::app::OpenControlApp> app;
 void setup() {
     OC_LOG_INFO("Minimal Example");
 
-    app = oc::teensy::AppBuilder()
+    app = oc::hal::teensy::AppBuilder()
         .midi()
         .encoders(Config::ENCODERS)
         .buttons(Config::BUTTONS, Config::DEBOUNCE_MS)
