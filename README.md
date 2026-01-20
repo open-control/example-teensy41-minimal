@@ -127,7 +127,7 @@ constexpr std::array<ButtonDef, 2> BUTTONS = {{...}};
 Implements `IContext` interface with fluent binding API:
 
 ```cpp
-class MinimalContext : public oc::context::IContext {
+class MinimalContext : public oc::interface::IContext {
 public:
     // Declare required APIs (validated at context registration)
     static constexpr oc::context::Requirements REQUIRES{

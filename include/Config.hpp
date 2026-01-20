@@ -14,9 +14,10 @@
 
 #include <array>
 
-#include <oc/hal/common/ButtonDef.hpp>
-#include <oc/hal/common/EncoderDef.hpp>
-#include <oc/hal/Types.hpp>
+#include <oc/hal/common/embedded/ButtonDef.hpp>
+#include <oc/hal/common/embedded/EncoderDef.hpp>
+#include <oc/types/Ids.hpp>
+#include <oc/types/Callbacks.hpp>
 
 namespace Config {
 
@@ -48,12 +49,12 @@ constexpr uint8_t DEBOUNCE_MS = 5;
  * - ticksPerEvent: Ticks per event emission (4 = one detent)
  * - invertDirection: Flip rotation direction if wired backwards
  */
-constexpr std::array<oc::hal::common::EncoderDef, 4> ENCODERS = {{
+constexpr std::array<oc::hal::common::embedded::EncoderDef, 4> ENCODERS = {{
     // EncoderDef(id, pinA, pinB, ppr, rangeAngle, ticksPerEvent, invertDirection)
-    oc::hal::common::EncoderDef(1, 22, 23, 24, 270, 4, false),  // MACRO_1
-    oc::hal::common::EncoderDef(2, 18, 19, 24, 270, 4, false),  // MACRO_2
-    oc::hal::common::EncoderDef(3, 40, 41, 24, 270, 4, false),  // MACRO_3
-    oc::hal::common::EncoderDef(4, 36, 37, 24, 270, 4, false),  // MACRO_4
+    oc::hal::common::embedded::EncoderDef(1, 22, 23, 24, 270, 4, false),  // MACRO_1
+    oc::hal::common::embedded::EncoderDef(2, 18, 19, 24, 270, 4, false),  // MACRO_2
+    oc::hal::common::embedded::EncoderDef(3, 40, 41, 24, 270, 4, false),  // MACRO_3
+    oc::hal::common::embedded::EncoderDef(4, 36, 37, 24, 270, 4, false),  // MACRO_4
 }};
 
 // ═══════════════════════════════════════════════════════════════════
@@ -68,10 +69,10 @@ constexpr std::array<oc::hal::common::EncoderDef, 4> ENCODERS = {{
  * - pin: GPIO pin with source (MCU direct)
  * - activeLow: true = pressed when LOW (pull-up), false = pressed when HIGH
  */
-constexpr std::array<oc::hal::common::ButtonDef, 2> BUTTONS = {{
+constexpr std::array<oc::hal::common::embedded::ButtonDef, 2> BUTTONS = {{
     // ButtonDef(id, GpioPin{pin, source}, activeLow)
-    oc::hal::common::ButtonDef(1, oc::hal::GpioPin{32, oc::hal::GpioPin::Source::MCU}, true),  // NAV
-    oc::hal::common::ButtonDef(2, oc::hal::GpioPin{35, oc::hal::GpioPin::Source::MCU}, true),  // AUX
+    oc::hal::common::embedded::ButtonDef(1, oc::hal::common::embedded::GpioPin{32, oc::hal::common::embedded::GpioPin::Source::MCU}, true),  // NAV
+    oc::hal::common::embedded::ButtonDef(2, oc::hal::common::embedded::GpioPin{35, oc::hal::common::embedded::GpioPin::Source::MCU}, true),  // AUX
 }};
 
 // ═══════════════════════════════════════════════════════════════════

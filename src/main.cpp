@@ -24,7 +24,7 @@
 
 #include <oc/hal/teensy/Teensy.hpp>
 #include <oc/app/OpenControlApp.hpp>
-#include <oc/context/IContext.hpp>
+#include <oc/context/ContextBase.hpp>
 #include <oc/context/Requirements.hpp>
 
 // Local configuration
@@ -46,7 +46,7 @@ enum class ContextID : uint8_t { MINIMAL = 0 };
  * Sets up all input bindings during initialization.
  * Encoders send CC, buttons toggle CC values.
  */
-class MinimalContext : public oc::context::IContext {
+class MinimalContext : public oc::context::ContextBase {
 public:
     /// Declare required APIs (validated at registration time)
     static constexpr oc::context::Requirements REQUIRES{
@@ -71,7 +71,7 @@ private:
         // Encoder 1-4: Send MIDI CC on turn
         // Value is normalized [0.0-1.0], we map to [0-127]
         for (uint8_t i = 0; i < Config::ENCODERS.size(); ++i) {
-            oc::hal::EncoderID id = Config::ENCODERS[i].id;
+            oc::EncoderID id = Config::ENCODERS[i].id;
             uint8_t cc = Config::ENCODER_CC_BASE + i;
 
             onEncoder(id).turn().then([this, cc](float value) {
