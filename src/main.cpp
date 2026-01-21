@@ -55,10 +55,10 @@ public:
         .midi = true
     };
 
-    bool initialize() override {
+    oc::Result<void> init() override {
         setupEncoderBindings();
         setupButtonBindings();
-        return true;
+        return oc::Result<void>::ok();
     }
 
     void update() override {}
