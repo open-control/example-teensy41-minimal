@@ -55,10 +55,10 @@ public:
         .midi = true
     };
 
-    oc::Result<void> init() override {
+    oc::type::Result<void> init() override {
         setupEncoderBindings();
         setupButtonBindings();
-        return oc::Result<void>::ok();
+        return oc::type::Result<void>::ok();
     }
 
     void update() override {}
@@ -71,7 +71,7 @@ private:
         // Encoder 1-4: Send MIDI CC on turn
         // Value is normalized [0.0-1.0], we map to [0-127]
         for (uint8_t i = 0; i < Config::ENCODERS.size(); ++i) {
-            oc::EncoderID id = Config::ENCODERS[i].id;
+            oc::type::EncoderID id = Config::ENCODERS[i].id;
             uint8_t cc = Config::ENCODER_CC_BASE + i;
 
             onEncoder(id).turn().then([this, cc](float value) {

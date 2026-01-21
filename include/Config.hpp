@@ -16,8 +16,8 @@
 
 #include <oc/hal/common/embedded/ButtonDef.hpp>
 #include <oc/hal/common/embedded/EncoderDef.hpp>
-#include <oc/types/Ids.hpp>
-#include <oc/types/Callbacks.hpp>
+#include <oc/type/Ids.hpp>
+#include <oc/type/Callbacks.hpp>
 
 namespace Config {
 
